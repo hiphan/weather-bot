@@ -1,3 +1,7 @@
+"scripts": {
+  "start": "node index.js"
+}
+
 {
   "name": "idle-bot-messenger",
   "version": "1.0.0",
