@@ -8,7 +8,6 @@ const
 
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
-
 app.post('/webhook', (req, res) => {
 	let body = req.body;
 
@@ -29,8 +28,8 @@ app.post('/webhook', (req, res) => {
 
 });
 
+app.get('/webhook', (req, res) => {
 
-app.get('webhook', (req, res) => {
 	let VERIFY_TOKEN = "test123";
 
 	let mode = req.query['hub.mode'];
