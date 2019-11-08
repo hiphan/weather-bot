@@ -42,7 +42,7 @@ app.post('/webhook', (req, res) => {
 
 app.get('/webhook', (req, res) => {
 
-	const VERIFY_TOKEN = process.env.VERIFICATION_TOKEN;
+	const VERIFY_TOKEN = "h2i1e0u1p1h9a9n8";
 
 	let mode = req.query['hub.mode'];
 	let token = req.query['hub.verify_token'];
