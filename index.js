@@ -69,7 +69,7 @@ function handleMessage(sender_psid, received_message) {
 
 	if (received_message.text) {
 		response = {
-			"text": "Hello"
+			"text": "Hi Linh is so dumb :)"
 		}
 	}
 
