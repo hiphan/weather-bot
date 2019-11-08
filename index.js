@@ -7,6 +7,7 @@ const
 	bodyParser = require('body-parser'),
 	app = express().use(bodyParser.json());
 
+const request = require('request');
 
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
@@ -69,7 +70,7 @@ function handleMessage(sender_psid, received_message) {
 
 	if (received_message.text) {
 		response = {
-			"text": `Hello`
+			"text": "Hello"
 		}
 	}
 
@@ -91,7 +92,7 @@ function callSendAPI(sender_psid, response) {
 
 	request({
 		"uri": "https://graph.facebook.com/v2.6/me/messages",
-	    "qs": { "access_token": process.env.PAGE_ACCESS_TOKEN },
+	    "qs": { "access_token": PAGE_ACCESS_TOKEN },
 	    "method": "POST",
 	    "json": request_body
 	}, (err, res, body) => {
