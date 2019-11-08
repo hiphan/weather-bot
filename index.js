@@ -26,13 +26,15 @@ app.post('/webhook', (req, res) => {
 			if (webhook_event.message) {
 				handleMessage(sender_psid, webhook_event.message);
 			} else if (webhook_event.postback) {
-				handlePostback(sender_psid, webhook_event.postback);
+				if (webhook_event.postback.payload == "GET_STARTED") {
+					handleGetStartedPostback(sender_psid);
+				} else {
+					handlePostback(sender_psid, webhook_event.postback);
+				}
 			}
 		});
 
 	res.status(200).send('EVENT_RECEIVED');
-
-	setupGetStarted(res);
 
 	} else {
 
@@ -66,6 +68,12 @@ app.get('/webhook', (req, res) => {
 	}
 });
 
+app.get('/setup', (req, res) => {
+
+	setupGetStarted(res);
+	
+})
+
 function setupGetStarted(res) { 
 	let start_body = { 
 		"get_started": {
@@ -87,12 +95,18 @@ function setupGetStarted(res) {
 	})
 }
 
+function handleGetStartedPostback(sender_psid) {
+	let response = "Welcome to Weather Bot!";
+
+	callSendAPI(sender_psid, response);
+}
+
 function handleMessage(sender_psid, received_message) {
 	let response;
 
 	if (received_message.text) {
 		response = {
-			"text": "Hi Linh is so dumb :)"
+			"text": "Hello this is a response message."
 		}
 	}
 
