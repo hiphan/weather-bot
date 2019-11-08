@@ -3,11 +3,10 @@
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 
 const 
+	request = require('request'),
 	express = require('express'),
 	bodyParser = require('body-parser'),
 	app = express().use(bodyParser.json());
-
-const request = require('request');
 
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
