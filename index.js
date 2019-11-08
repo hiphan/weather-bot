@@ -11,6 +11,7 @@ const
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
 app.post('/webhook', (req, res) => {
+
 	let body = req.body;
 
 	if (body.object == 'page') {
@@ -93,7 +94,7 @@ function callSendAPI(sender_psid, response) {
 			"access_token": PAGE_ACCESS_TOKEN
 		}, 
 		"method": "POST",
-		"json": request_body,
+		"json": request_body
 	}, (err, res, body) => {
 		if (!err) {
 			console.log('Message sent!')
