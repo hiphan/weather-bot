@@ -32,6 +32,8 @@ app.post('/webhook', (req, res) => {
 
 	res.status(200).send('EVENT_RECEIVED');
 
+	setupGetStarted(res);
+
 	} else {
 
 		res.sendStatus(404);
@@ -63,6 +65,27 @@ app.get('/webhook', (req, res) => {
 
 	}
 });
+
+function setupGetStarted(res) { 
+	let start_body = { 
+		"get_started": {
+			"payload": "GET_STARTED"
+		}
+	}
+
+	request({
+		"uri": "https://graph.facebook.com/v2.6/me/messages",
+		"qs": { "access_token": PAGE_ACCESS_TOKEN },
+		"method": "POST",
+		"json": start_body
+	}, (err, res, body) => {
+		if (!err) {
+			console.log("Got starting button!")
+		} else {
+			console.log("Unable to get starting button: " + err);
+		}
+	})
+}
 
 function handleMessage(sender_psid, received_message) {
 	let response;
