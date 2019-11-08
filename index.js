@@ -42,7 +42,7 @@ app.post('/webhook', (req, res) => {
 
 app.get('/webhook', (req, res) => {
 
-	const VERIFY_TOKEN = "h2i1e0u1p1h9a9n8";
+	const VERIFY_TOKEN = process.env.VERIFICATION_TOKEN;
 
 	let mode = req.query['hub.mode'];
 	let token = req.query['hub.verify_token'];
@@ -81,25 +81,24 @@ function handlePostback(sender_psid, received_postback) {
 }
 
 function callSendAPI(sender_psid, response) {
+
 	let request_body = {
-		"recipient": {
-			"id": sender_psid
-		}, 
-		"message": response
+	    "recipient": {
+	      "id": sender_psid
+	    },
+	    "message": response
 	}
 
 	request({
 		"uri": "https://graph.facebook.com/v2.6/me/messages",
-		"qs": {
-			"access_token": PAGE_ACCESS_TOKEN
-		}, 
-		"method": "POST",
-		"json": request_body
+	    "qs": { "access_token": process.env.PAGE_ACCESS_TOKEN },
+	    "method": "POST",
+	    "json": request_body
 	}, (err, res, body) => {
-		if (!err) {
-			console.log('Message sent!')
-		} else {
-			console.error("Unable to send message: " + err);
-		}
-	});
+	    if (!err) {
+	      console.log('message sent!')
+	    } else {
+	      console.error("Unable to send message:" + err);
+	    }
+  	}); 
 }
