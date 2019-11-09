@@ -30,6 +30,7 @@ app.post('/webhook', (req, res) => {
 				} else if (webhook_event.postback) {
 					if (webhook_event.postback.payload == GET_STARTED) {
 						handleGetStartedPostback(sender_psid, sender_first_name);
+						callSendAPI(sender_psid, "Here");
 					} else {
 						handlePostback(sender_psid, webhook_event.postback);
 					}
@@ -109,7 +110,7 @@ function handleMessage(sender_psid, received_message) {
 
 	if (received_message.text) {
 		response = {
-			"text": "Hello this is a response message."
+			"text": "Hello this is a response from WB."
 		}
 	}
 
