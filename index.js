@@ -1,6 +1,7 @@
 'use strict'; 
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const GET_STARTED = "GET_STARTED"
 
 const 
 	request = require('request'),
@@ -21,13 +22,14 @@ app.post('/webhook', (req, res) => {
 			console.log(webhook_event);
 
 			let sender_psid = webhook_event.sender.id;
+			let sender_first_name = webhook_event.sender.fist_name;
 			console.log('Sender ID: ' + sender_psid);
 
 			if (webhook_event.message) {
 				handleMessage(sender_psid, webhook_event.message);
 			} else if (webhook_event.postback) {
-				if (webhook_event.postback.payload == "GET_STARTED") {
-					handleGetStartedPostback(sender_psid);
+				if (webhook_event.postback.payload == GET_STARTED) {
+					handleGetStartedPostback(sender_psid, sender_first_name);
 				} else {
 					handlePostback(sender_psid, webhook_event.postback);
 				}
@@ -71,13 +73,13 @@ app.get('/webhook', (req, res) => {
 app.get('/setup', (req, res) => {
 
 	setupGetStarted(res);
-	
+
 })
 
 function setupGetStarted(res) { 
 	let start_body = { 
 		"get_started": {
-			"payload": "GET_STARTED"
+			"payload": GET_STARTED
 		}
 	}
 
@@ -95,8 +97,8 @@ function setupGetStarted(res) {
 	})
 }
 
-function handleGetStartedPostback(sender_psid) {
-	let response = "Welcome to Weather Bot!";
+function handleGetStartedPostback(sender_psid, sender_first_name) {
+	let response = "Hello ${sender_first_name} (dumbass!). Welcome to Weather Bot!";
 
 	callSendAPI(sender_psid, response);
 }
@@ -133,7 +135,7 @@ function callSendAPI(sender_psid, response) {
 	    "json": request_body
 	}, (err, res, body) => {
 	    if (!err) {
-	      console.log('message sent!')
+	      console.log('Message sent!')
 	    } else {
 	      console.error("Unable to send message:" + err);
 	    }
