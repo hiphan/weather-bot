@@ -18,22 +18,23 @@ app.post('/webhook', (req, res) => {
 	if (body.object == 'page') {
 
 		body.entry.forEach(function(entry) {
-			let webhook_event = entry.messaging[0];
-			console.log(webhook_event);
+			entry.messaging.forEach(function(webhook_event) {
+				console.log(webhook_event);
 
-			let sender_psid = webhook_event.sender.id;
-			let sender_first_name = webhook_event.sender.fist_name;
-			console.log('Sender ID: ' + sender_psid);
+				let sender_psid = webhook_event.sender.id;
+				let sender_first_name = webhook_event.sender.fist_name;
+				console.log('Sender ID: ' + sender_psid);
 
-			if (webhook_event.message) {
-				handleMessage(sender_psid, webhook_event.message);
-			} else if (webhook_event.postback) {
-				if (webhook_event.postback.payload == GET_STARTED) {
-					handleGetStartedPostback(sender_psid, sender_first_name);
-				} else {
-					handlePostback(sender_psid, webhook_event.postback);
+				if (webhook_event.message) {
+					handleMessage(sender_psid, webhook_event.message);
+				} else if (webhook_event.postback) {
+					if (webhook_event.postback.payload == GET_STARTED) {
+						handleGetStartedPostback(sender_psid, sender_first_name);
+					} else {
+						handlePostback(sender_psid, webhook_event.postback);
+					}
 				}
-			}
+			});
 		});
 
 	res.status(200).send('EVENT_RECEIVED');
