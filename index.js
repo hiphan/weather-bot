@@ -97,7 +97,7 @@ function setupGetStarted(res) {
 	})
 }
 
-function handleGetStartedPostback(sender_psid, sender_first_name) {
+function handleGetStartedPostback(sender_psid) {
 	let response = "Hello dumbass! Welcome to Weather Bot!";
 
 	callSendAPI(sender_psid, response);
