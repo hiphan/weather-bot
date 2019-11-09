@@ -19,6 +19,7 @@ app.post('/webhook', (req, res) => {
 
 		body.entry.forEach(function(entry) {
 			entry.messaging.forEach(function(webhook_event) {
+
 				console.log(webhook_event);
 
 				let sender_psid = webhook_event.sender.id;
@@ -99,6 +100,10 @@ function handleMessage(sender_psid, received_message) {
 	if (received_message.text) {
 		response = {
 			"text": "Hello this is a response from WB."
+		}	
+	} else {
+		response = {
+			"test": "Should not be here."
 		}
 	}
 
