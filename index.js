@@ -27,11 +27,7 @@ app.post('/webhook', (req, res) => {
 				if (webhook_event.message) {
 					handleMessage(sender_psid, webhook_event.message);
 				} else if (webhook_event.postback) {
-					if (webhook_event.postback.payload === GET_STARTED) {
-						handleGetStartedPostback(sender_psid);
-					} else {
-						handlePostback(sender_psid, webhook_event.postback);
-					}
+					handlePostback(sender_psid, webhook_event.postback);		
 				}
 			});
 		});
@@ -97,12 +93,6 @@ function setupGetStarted(res) {
 	})
 }
 
-function handleGetStartedPostback(sender_psid) {
-	let response = "Hello dumbass! Welcome to Weather Bot!";
-
-	callSendAPI(sender_psid, response);
-}
-
 function handleMessage(sender_psid, received_message) {
 	let response;
 
@@ -117,6 +107,19 @@ function handleMessage(sender_psid, received_message) {
 
 function handlePostback(sender_psid, received_postback) {
 
+	let response; 
+
+	switch(received_postback) 
+	{
+		case GET_STARTED:
+			response = "Welcome to Weather Bot!";
+			break;
+		default: 
+			response = "Missing logic";
+			break;
+	}
+
+	callSendAPI(sender_psid, response);
 }
 
 function callSendAPI(sender_psid, response) {
