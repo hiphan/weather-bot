@@ -109,7 +109,7 @@ function handleMessage(sender_psid, received_message) {
 function handlePostback(sender_psid, received_postback) {
 
 	let response; 
-
+	console.log(received_postback.payload);
 	switch(received_postback.payload) 
 	{
 		case GET_STARTED:
