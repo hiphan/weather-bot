@@ -117,7 +117,7 @@ function handlePostback(sender_psid, received_postback) {
 			handleGetStartedPostback(sender_psid, received_postback);
 			break;
 		default: 
-			response = "Missing logic";
+			console.log("Missing logic");
 	}
 }
 
