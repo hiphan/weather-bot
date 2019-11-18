@@ -101,11 +101,7 @@ function handleMessage(sender_psid, received_message) {
 		response = {
 			"text": "Hello this is a response from WB."
 		}	
-	} else {
-		response = {
-			"test": "Should not be here."
-		}
-	}
+	} 
 
 	callSendAPI(sender_psid, response);
 }
@@ -114,7 +110,7 @@ function handlePostback(sender_psid, received_postback) {
 
 	let response; 
 
-	switch(received_postback) 
+	switch(received_postback.payload) 
 	{
 		case GET_STARTED:
 			response = "Welcome to Weather Bot!";
