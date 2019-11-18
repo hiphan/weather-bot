@@ -139,6 +139,7 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 			console.log("Cannot get first name.");
 		} 
 		const message = greeting + "This is a welcome message...";
+		console.log(message);
 		callSendAPI(sender_psid, message);
 	});
 }
