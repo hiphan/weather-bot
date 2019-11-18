@@ -1,7 +1,6 @@
 'use strict'; 
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-const GET_STARTED = "GET_STARTED"
 
 const 
 	request = require('request'),
@@ -76,7 +75,7 @@ app.get('/setup', (req, res) => {
 function setupGetStarted(res) { 
 	let start_body = { 
 		"get_started": {
-			"payload": GET_STARTED
+			"payload": "GET_STARTED"
 		}
 	}
 
@@ -99,7 +98,7 @@ function handleMessage(sender_psid, received_message) {
 
 	if (received_message.text) {
 		response = {
-			"text": "Hello this is a response from WB."
+			"text": "Hello this is a response from Weather Bot."
 		}	
 	} 
 
@@ -113,11 +112,11 @@ function handlePostback(sender_psid, received_postback) {
 
 	switch(payload) 
 	{
-		case GET_STARTED:
+		case "GET_STARTED":
 			handleGetStartedPostback(sender_psid, received_postback);
 			break;
 		default: 
-			console.log("Missing logic");
+			console.log("Missing logic...");
 	}
 }
 
