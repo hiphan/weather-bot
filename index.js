@@ -107,7 +107,7 @@ function handleMessage(sender_psid, received_message) {
 }
 
 function handlePostback(sender_psid, received_postback) {
-
+	console.log("Handling postback...");
 	const payload = received_postback.payload;
 	let response; 
 
@@ -122,6 +122,7 @@ function handlePostback(sender_psid, received_postback) {
 }
 
 function handleGetStartedPostback(sender_psid, received_postback) {
+	console.log("Handling GS postback...");
 	request({
 		"uri": `https://graph.facebook.com/v2.6/${sender_psid}`,
 		"qs": { 
