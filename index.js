@@ -112,7 +112,7 @@ function handlePostback(sender_psid, received_postback) {
 
 	switch(payload) 
 	{
-		case "GET_STARTED":
+		case "qr":
 			handleGetStartedPostback(sender_psid, received_postback);
 			break;
 		default: 
