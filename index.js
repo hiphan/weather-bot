@@ -18,7 +18,7 @@ app.post('/webhook', (req, res) => {
 	if (body.object == 'page') {
 
 		body.entry.forEach(function(entry) {
-			entry.messaging.forEach(function(webhook_event) {
+			entry.messaging.forEach((webhook_event) => {
 
 				console.log(webhook_event);
 
@@ -108,19 +108,39 @@ function handleMessage(sender_psid, received_message) {
 
 function handlePostback(sender_psid, received_postback) {
 
+	const payload = received_postback.payload;
 	let response; 
-	console.log(received_postback.payload);
-	switch(received_postback.payload) 
+
+	switch(payload) 
 	{
 		case GET_STARTED:
-			response = "Welcome to Weather Bot!";
+			handleGetStartedPostback(sender_psid, received_postback);
 			break;
 		default: 
 			response = "Missing logic";
-			break;
 	}
+}
 
-	callSendAPI(sender_psid, response);
+function handleGetStartedPostback(sender_psid, received_postback) {
+	request({
+		"uri": `https://graph.facebook.com/v2.6/${sender_psid}`,
+		"qs": { 
+			"access_token": PAGE_ACCESS_TOKEN,
+			"fields": "first_name"
+		},
+		"method": "GET",
+	}, (err, res, body) => {
+		let greeting = "";
+		if (!err) {
+			let bodyObj = JSON.parse(body);
+			const first_name = bodyObj.first_name;
+			greeting = "Hello " + first_name + "! ";
+		} else {
+			console.log("Cannot get first name.");
+		} 
+		const message = greeting + "This is a welcome message...";
+		callSendAPI(sender_psid, message);
+	});
 }
 
 function callSendAPI(sender_psid, response) {
