@@ -302,7 +302,7 @@ function requestNewLocation(sender_psid, received_postback) {
 	const response = {
 		"text": "Please enter your zip code or address :)"
 	}
-
+	console.log("Shouldn't be here");
 	callSendAPI(sender_psid, response);
 
 }
