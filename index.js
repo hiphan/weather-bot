@@ -141,24 +141,38 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 		} else {
 			console.log("Cannot get first name.");
 		} 
-		const message = greeting + "This is a welcome message... and Linh is so dumb :). Would you like to use your current location or enter a location?";
+		const message = greeting + "Welcome to Weather Bot...";
 		response = {
 			"text": message,
-			"buttons": [
-				{
-					"type": "postback",
-					"title": "Current Location",
-					"payload": CURRENT_LOCATION
-				}, 
-				{
-					"type": "postback",
-					"title": "New Location",
-					"payload": ENTER_LOCATION
-				}
-			]
 		};
 		callSendAPI(sender_psid, response);
+		requestLocation(sender_psid);
 	});
+}
+
+function requestLocation(sender_psid) {
+	let response = {
+		"attachment": {
+			"type": "template",
+			"payload": {
+				"template_type": "button", 
+				"text": "Would you like to use your current location or enter a location?",
+				"buttons": [
+					{
+						"type": "postback", 
+						"title": "Current location",
+						"payload": CURRENT_LOCATION
+					}, 
+					{
+						"type": "postback",
+						"title": "New location",
+						"payload": ENTER_LOCATION
+					}
+				] 
+			}
+		}
+	}
+	callSendAPI(sender_psid, response);
 }
 
 function callSendAPI(sender_psid, response) {
