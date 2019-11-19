@@ -220,7 +220,7 @@ function handleMessage(sender_psid, received_message) {
 		}
 	} 
 
-	console.log(response);
+	console.log("Should be after 1");
 	callSendAPI(sender_psid, response);
 }
 
@@ -302,7 +302,7 @@ function requestNewLocation(sender_psid, received_postback) {
 	const response = {
 		"text": "Please enter your zip code or address :)"
 	}
-	console.log("Shouldn't be here");
+
 	callSendAPI(sender_psid, response);
 
 }
@@ -329,7 +329,9 @@ function requestLocation(sender_psid) {
 			}
 		}
 	}
+
 	callSendAPI(sender_psid, response);
+
 }
 
 function callSendAPI(sender_psid, response) {
@@ -348,12 +350,19 @@ function callSendAPI(sender_psid, response) {
 	    "method": "POST",
 	    "json": request_body
 	}, (err, res, body) => {
+
 	    if (!err) {
+
 	      console.log('Message sent!')
+
 	    } else {
+
 	      console.error("Unable to send message:" + err);
+
 	    }
+
   	}); 
+
 }
 
 function validateZipCode(zip) {
