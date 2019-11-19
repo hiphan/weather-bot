@@ -110,6 +110,8 @@ function handleMessage(sender_psid, received_message) {
 		if (chatStatus === waitingAddress) {
 
 			const address = received_message.text;
+			console.log("This is the address: " + address);
+
 			if (validateZipCode(address)) {
 				// user provides a zip code
 				console.log("Received a zip code");
@@ -121,27 +123,39 @@ function handleMessage(sender_psid, received_message) {
 				}, (err, res, body) => {
 
 					const bodyObj = JSON.parse(body);
-					const formattedAddress = bodyObj.results[0].formatted_address;
-					response = {
-						"attachment": {
-							"type": "template",
-							"payload": {
-								"template_type": "button",
-								"text": `You are in ${formattedAddress}. Is this correct?`,
-								"buttons": [
-									{
-										"type": "postback",
-										"title": "Yes!",
-										"payload": CORRECT_LOCATION
-									}, 
-									{
-										"type": "postback",
-										"title": "No!",
-										"payload": WRONG_LOCATION
-									}
-								]
+					const locationStatus = bodyObj.status;
+
+					if (locationStatus === "OK") {
+
+						const formattedAddress = bodyObj.results[0].formatted_address;
+						response = {
+							"attachment": {
+								"type": "template",
+								"payload": {
+									"template_type": "button",
+									"text": `You are in ${formattedAddress}. Is this correct?`,
+									"buttons": [
+										{
+											"type": "postback",
+											"title": "Yes!",
+											"payload": CORRECT_LOCATION
+										}, 
+										{
+											"type": "postback",
+											"title": "No!",
+											"payload": WRONG_LOCATION
+										}
+									]
+								}
 							}
 						}
+
+					} else {
+
+						response = {
+							"text": "An error occured."
+						}
+
 					}
 
 				});
@@ -160,29 +174,40 @@ function handleMessage(sender_psid, received_message) {
 				}, (err, res, body) => {
 
 					const bodyObj = JSON.parse(body);
-					const formattedAddress = bodyObj.results[0].formatted_address;
-					response = {
-						"attachment": {
-							"type": "template",
-							"payload": {
-								"template_type": "button",
-								"text": `You are in ${formattedAddress}. Is this correct?`,
-								"buttons": [
-									{
-										"type": "postback",
-										"title": "Yes!",
-										"payload": CORRECT_LOCATION
-									}, 
-									{
-										"type": "postback",
-										"title": "No!",
-										"payload": WRONG_LOCATION
-									}
-								]
+					const locationStatus = bodyObj.results;
+
+					if (locationStatus === "OK") { 
+
+						const formattedAddress = bodyObj.results[0].formatted_address;
+						response = {
+							"attachment": {
+								"type": "template",
+								"payload": {
+									"template_type": "button",
+									"text": `You are in ${formattedAddress}. Is this correct?`,
+									"buttons": [
+										{
+											"type": "postback",
+											"title": "Yes!",
+											"payload": CORRECT_LOCATION
+										}, 
+										{
+											"type": "postback",
+											"title": "No!",
+											"payload": WRONG_LOCATION
+										}
+									]
+								}
 							}
 						}
-					}
 
+					} else {
+
+						response = {
+							"text": "An error occured."
+						}
+
+					}
 				});
 
 			}
