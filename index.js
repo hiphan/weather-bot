@@ -144,15 +144,15 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 		const message = greeting + "This is a welcome message... and Linh is so dumb :). Would you like to use your current location or enter a location?";
 		response = {
 			"text": message,
-			"quick_replies": [
+			"buttons": [
 				{
-					"content_type": "text",
-					"title": "Use my current location",
+					"type": "postback",
+					"title": "Current Location",
 					"payload": CURRENT_LOCATION
 				}, 
 				{
-					"content_type": "text",
-					"title": "Enter a new location", 
+					"type": "postback",
+					"title": "New Location",
 					"payload": ENTER_LOCATION
 				}
 			]
