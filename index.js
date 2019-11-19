@@ -107,12 +107,11 @@ function handleMessage(sender_psid, received_message) {
 	if (received_message.text) {
 
 		const address = received_message.text;
-		console.log("This is the address: " + address);
 
 		if (validateZipCode(address)) {
 
 			// user provides a zip code
-			console.log("Received a zip code.");
+			console.log("Received a zip code: " + address);
 
 			request({
 				"uri": "https://maps.googleapis.com/maps/api/geocode/json?",
@@ -129,8 +128,7 @@ function handleMessage(sender_psid, received_message) {
 				if (locationStatus === "OK") {
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
-					console.log("Formatted address: " + formattedAddress);
-					console.log("1");		
+					console.log("Formatted address: " + formattedAddress);	
 
 					response = {
 						"attachment": {
@@ -154,23 +152,24 @@ function handleMessage(sender_psid, received_message) {
 						}
 					}
 
+					callSendAPI(sender_psid, response);
+
 				} else {
 
 					response = {
 						"text": "An error occured."
 					}
 
+					callSendAPI(sender_psid, response);
+
 				}
 
 			});
-					
-			console.log("Should be after 1");
-			callSendAPI(sender_psid, response);
 
 		} else {
 
 			// user provides an address
-			console.log("Received an address.");
+			console.log("Received an address: " + address);
 
 			request({
 				"uri": "https://maps.googleapis.com/maps/api/geocode/json?",
@@ -211,18 +210,17 @@ function handleMessage(sender_psid, received_message) {
 						}
 					}
 
+					callSendAPI(sender_psid, response);
+
 				} else {
 
 					response = {
 						"text": "An error occured."
 					}
 
+					callSendAPI(sender_psid, response);
 				}
 			});
-
-
-			console.log("Should be after 1");
-			callSendAPI(sender_psid, response);
 
 		}
 	} 
@@ -312,7 +310,7 @@ function requestNewLocation(sender_psid, received_postback) {
 }
 
 function requestLocation(sender_psid) {
-	let response = {
+	const response = {
 		"attachment": {
 			"type": "template",
 			"payload": {
