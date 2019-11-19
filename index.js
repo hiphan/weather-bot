@@ -125,7 +125,7 @@ function handleMessage(sender_psid, received_message) {
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					console.log("Formatted address: " + formattedAddress);
-
+					console.log("Got here");
 					response = {
 						"attachment": {
 							"type": "template",
