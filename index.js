@@ -130,25 +130,7 @@ function handleMessage(sender_psid, received_message) {
 					console.log("Formatted address: " + formattedAddress);
 
 					response = {
-						"attachment": {
-							"type": "template",
-							"payload": {
-								"template_type": "button",
-								"text": `You are in dot zip dot. Is this correct?`,
-								"buttons": [
-									{
-										"type": "postback",
-										"title": "Yes!",
-										"payload": CORRECT_LOCATION
-									}, 
-									{
-										"type": "postback",
-										"title": "No!",
-										"payload": WRONG_LOCATION
-									}
-								]
-							}
-						}
+						"text": formattedAddress
 					}
 
 				} else {
@@ -188,7 +170,7 @@ function handleMessage(sender_psid, received_message) {
 							"type": "template",
 							"payload": {
 								"template_type": "button",
-								"text": `You are in dot dot dot. Is this correct?`,
+								"text": `You are in ${formattedAddress}. Is this correct?`,
 								"buttons": [
 									{
 										"type": "postback",
