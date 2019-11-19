@@ -184,7 +184,7 @@ function handleMessage(sender_psid, received_message) {
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					console.log("Formatted address: " + formattedAddress);
-
+					console.log("1");
 					response = {
 						"attachment": {
 							"type": "template",
@@ -332,6 +332,7 @@ function requestLocation(sender_psid) {
 }
 
 function callSendAPI(sender_psid, response) {
+	console.log("2");
 
 	let request_body = {
 	    "recipient": {
