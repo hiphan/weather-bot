@@ -7,11 +7,6 @@ const ENTER_LOCATION = "ENTER_LOCATION";
 const CORRECT_LOCATION = "CORRECT_LOCATION";
 const WRONG_LOCATION = "WRONG_LOCATION"
 
-const waitingAddress = 1;
-const conversation = 2;
-
-let chatStatus = 0;
-
 const 
 	request = require('request'),
 	express = require('express'),
@@ -104,119 +99,113 @@ function setupGetStarted(res) {
 }
 
 function handleMessage(sender_psid, received_message) {
+	
 	let response;
 
 	if (received_message.text) {
-		if (chatStatus === waitingAddress) {
 
-			const address = received_message.text;
-			console.log("This is the address: " + address);
+		const address = received_message.text;
+		console.log("This is the address: " address);
 
-			if (validateZipCode(address)) {
-				// user provides a zip code
-				console.log("Received a zip code");
+		if (validateZipCode(address)) {
 
-				request({
-					"uri": `https://maps.googleapis.com/maps/api/geocode/json?address=${address}`,
-					"qs": { "key": GOOGLE_API_KEY },
-					"method": "GET"
-				}, (err, res, body) => {
+			// user provides a zip code
+			console.log("Received a zip code");
 
-					const bodyObj = JSON.parse(body);
-					const locationStatus = bodyObj.status;
+			request({
+				"uri": `https://maps.googleapis.com/maps/api/geocode/json?address=${address}`,
+				"qs": { "key": GOOGLE_API_KEY },
+				"method": "GET"
+			}, (err, res, body) => {
 
-					if (locationStatus === "OK") {
+				const bodyObj = JSON.parse(body);
+				const locationStatus = bodyObj.status;
 
-						const formattedAddress = bodyObj.results[0].formatted_address;
-						response = {
-							"attachment": {
-								"type": "template",
-								"payload": {
-									"template_type": "button",
-									"text": `You are in ${formattedAddress}. Is this correct?`,
-									"buttons": [
-										{
-											"type": "postback",
-											"title": "Yes!",
-											"payload": CORRECT_LOCATION
-										}, 
-										{
-											"type": "postback",
-											"title": "No!",
-											"payload": WRONG_LOCATION
-										}
-									]
-								}
+				if (locationStatus === "OK") {
+
+					const formattedAddress = bodyObj.results[0].formatted_address;
+					response = {
+						"attachment": {
+							"type": "template",
+							"payload": {
+								"template_type": "button",
+								"text": `You are in ${formattedAddress}. Is this correct?`,
+								"buttons": [
+									{
+										"type": "postback",
+										"title": "Yes!",
+										"payload": CORRECT_LOCATION
+									}, 
+									{
+										"type": "postback",
+										"title": "No!",
+										"payload": WRONG_LOCATION
+									}
+								]
 							}
 						}
-
-					} else {
-
-						response = {
-							"text": "An error occured."
-						}
-
 					}
 
-				});
+				} else {
 
-			} else {
-				// user provides an address
-				console.log("Received an address.");
-
-				request({
-					"uri": "https://maps.googleapis.com/maps/api/geocode/json?",
-					"qs": {
-						"address": address,
-						"key": GOOGLE_API_KEY
-					},
-					"method": "GET"
-				}, (err, res, body) => {
-
-					const bodyObj = JSON.parse(body);
-					const locationStatus = bodyObj.results;
-
-					if (locationStatus === "OK") { 
-
-						const formattedAddress = bodyObj.results[0].formatted_address;
-						response = {
-							"attachment": {
-								"type": "template",
-								"payload": {
-									"template_type": "button",
-									"text": `You are in ${formattedAddress}. Is this correct?`,
-									"buttons": [
-										{
-											"type": "postback",
-											"title": "Yes!",
-											"payload": CORRECT_LOCATION
-										}, 
-										{
-											"type": "postback",
-											"title": "No!",
-											"payload": WRONG_LOCATION
-										}
-									]
-								}
-							}
-						}
-
-					} else {
-
-						response = {
-							"text": "An error occured."
-						}
-
+					response = {
+						"text": "An error occured."
 					}
-				});
 
-			}
+				}
+
+			});
 
 		} else {
 
-			response = {
-				"text": "Hello this is a response from Weather Bot."
-			}	
+			// user provides an address
+			console.log("Received an address.");
+
+			request({
+				"uri": "https://maps.googleapis.com/maps/api/geocode/json?",
+				"qs": {
+					"address": address,
+					"key": GOOGLE_API_KEY
+				},
+				"method": "GET"
+			}, (err, res, body) => {
+
+				const bodyObj = JSON.parse(body);
+				const locationStatus = bodyObj.results;
+
+				if (locationStatus === "OK") { 
+
+					const formattedAddress = bodyObj.results[0].formatted_address;
+					response = {
+						"attachment": {
+							"type": "template",
+							"payload": {
+								"template_type": "button",
+								"text": `You are in ${formattedAddress}. Is this correct?`,
+								"buttons": [
+									{
+										"type": "postback",
+										"title": "Yes!",
+										"payload": CORRECT_LOCATION
+									}, 
+									{
+										"type": "postback",
+										"title": "No!",
+										"payload": WRONG_LOCATION
+									}
+								]
+							}
+						}
+					}
+
+				} else {
+
+					response = {
+						"text": "An error occured."
+					}
+
+				}
+			});
 
 		}
 	} 
@@ -225,6 +214,7 @@ function handleMessage(sender_psid, received_message) {
 }
 
 function handlePostback(sender_psid, received_postback) {
+
 	console.log("Handling postback...");
 	const payload = received_postback.payload;
 	let response; 
@@ -234,19 +224,25 @@ function handlePostback(sender_psid, received_postback) {
 		case "qr":
 			handleGetStartedPostback(sender_psid, received_postback);
 			break;
+
 		case CURRENT_LOCATION:
 			requestCurrentLocation(sender_psid, received_postback);
 			break;
+
 		case ENTER_LOCATION:
 			requestNewLocation(sender_psid, received_postback);
 			break; 
+
 		default: 
 			console.log("Missing logic...");
 	}
+
 }
 
 function handleGetStartedPostback(sender_psid, received_postback) {
+
 	console.log("Handling GS postback...");
+
 	request({
 		"uri": `https://graph.facebook.com/v2.6/${sender_psid}`,
 		"qs": { 
@@ -255,35 +251,48 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 		},
 		"method": "GET",
 	}, (err, res, body) => {
+
 		let response;
 		let greeting = "";
+
 		if (!err) {
+
 			const bodyObj = JSON.parse(body);
 			const first_name = bodyObj.first_name;
 			greeting = "Hello " + first_name + "! ";
+
 		} else {
+
 			console.log("Cannot get first name.");
+
 		} 
+
 		const message = greeting + "Welcome to Weather Bot...";
 		response = {
 			"text": message,
 		};
+
 		callSendAPI(sender_psid, response);
 		requestLocation(sender_psid);
+
 	});
+
 }
 
 function requestCurrentLocation(sender_psid, received_postback) {
+
 	// Since location quick reply is deprecated, this will call hanldNewLocation
 	requestNewLocation(sender_psid, received_postback);
+
 }
 
 function requestNewLocation(sender_psid, received_postback) {
+
 	const response = {
 		"text": "Please enter your zip code or address"
 	}
 	callSendAPI(sender_psid, response);
-	chatStatus = waitingAddress;
+
 }
 
 function requestLocation(sender_psid) {
