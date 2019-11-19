@@ -1,8 +1,16 @@
 'use strict'; 
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-const CURRENT_LOCATION = "CURRENT_LOCATION"
-const ENTER_LOCATION = "ENTER_LOCATION"
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const CURRENT_LOCATION = "CURRENT_LOCATION";
+const ENTER_LOCATION = "ENTER_LOCATION";
+const CORRECT_LOCATION = "CORRECT_LOCATION";
+const WRONG_LOCATION = "WRONG_LOCATION"
+
+const waitingAddress = 1;
+const conversation = 2;
+
+let chatStatus = 0;
 
 const 
 	request = require('request'),
@@ -99,9 +107,89 @@ function handleMessage(sender_psid, received_message) {
 	let response;
 
 	if (received_message.text) {
-		response = {
-			"text": "Hello this is a response from Weather Bot."
-		}	
+		if (chatStatus == waitingAddress) {
+
+			const address = received_message.text;
+			if (validateZipCode(address)) {
+				// user provides a zip code
+				request({
+					"uri": `https://maps.googleapis.com/maps/api/geocode/json?address=${address}`,
+					"qs": { "key": GOOGLE_API_KEY },
+					"method": "GET"
+				}, (err, res, body) => {
+
+					const bodyObj = JSON.parse(body);
+					const formattedAddress = bodyObj.results[0].formatted_address;
+					response = {
+						"attachment": {
+							"type": "template",
+							"payload": {
+								"template_type": "button",
+								"text": `You are in ${formattedAddress}. Is this correct?`,
+								"buttons": [
+									{
+										"type": "postback",
+										"title": "Yes!",
+										"payload": CORRECT_LOCATION
+									}, 
+									{
+										"type": "postback",
+										"title": "No!",
+										"payload": WRONG_LOCATION
+									}
+								]
+							}
+						}
+					}
+
+				});
+
+			} else {
+				// user provides an address
+				request({
+					"uri": "https://maps.googleapis.com/maps/api/geocode/json?",
+					"qs": {
+						"address": address,
+						"key": GOOGLE_API_KEY
+					},
+					"method": "GET"
+				}, (err, res, body) => {
+					
+					const bodyObj = JSON.parse(body);
+					const formattedAddress = bodyObj.results[0].formatted_address;
+					response = {
+						"attachment": {
+							"type": "template",
+							"payload": {
+								"template_type": "button",
+								"text": `You are in ${formattedAddress}. Is this correct?`,
+								"buttons": [
+									{
+										"type": "postback",
+										"title": "Yes!",
+										"payload": CORRECT_LOCATION
+									}, 
+									{
+										"type": "postback",
+										"title": "No!",
+										"payload": WRONG_LOCATION
+									}
+								]
+							}
+						}
+					}
+
+				});
+
+			}
+
+		} else {
+
+			response = {
+				"text": "Hello this is a response from Weather Bot."
+			}	
+
+		}
 	} 
 
 	callSendAPI(sender_psid, response);
@@ -117,6 +205,12 @@ function handlePostback(sender_psid, received_postback) {
 		case "qr":
 			handleGetStartedPostback(sender_psid, received_postback);
 			break;
+		case CURRENT_LOCATION:
+			requestCurrentLocation(sender_psid, received_postback);
+			break;
+		case ENTER_LOCATION:
+			requestNewLocation(sender_psid, received_postback);
+			break; 
 		default: 
 			console.log("Missing logic...");
 	}
@@ -148,6 +242,19 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 		callSendAPI(sender_psid, response);
 		requestLocation(sender_psid);
 	});
+}
+
+function requestCurrentLocation(sender_psid, received_postback) {
+	// Since location quick reply is deprecated, this will call hanldNewLocation
+	requestNewLocation(sender_psid, received_postback);
+}
+
+function requestNewLocation(sender_psid, received_postback) {
+	const response = {
+		"text": "Please enter your zip code or address"
+	}
+	callSendAPI(sender_psid, response);
+	chatStatus = waitingAddress;
 }
 
 function requestLocation(sender_psid) {
@@ -196,4 +303,9 @@ function callSendAPI(sender_psid, response) {
 	      console.error("Unable to send message:" + err);
 	    }
   	}); 
+}
+
+function validateZipCode(zip) {
+	const regex = RegExp('^[0-9]{5}(?:-[0-9]{4})?$');
+	return regex.test(zip);
 }
