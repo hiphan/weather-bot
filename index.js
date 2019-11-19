@@ -1,6 +1,8 @@
 'use strict'; 
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const CURRENT_LOCATION = "CURRENT_LOCATION"
+const ENTER_LOCATION = "ENTER_LOCATION"
 
 const 
 	request = require('request'),
@@ -139,10 +141,22 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 		} else {
 			console.log("Cannot get first name.");
 		} 
-		const message = greeting + "This is a welcome message... and Linh is so dumb :)";
+		const message = greeting + "This is a welcome message... and Linh is so dumb :). Would you like to use your current location or enter a location?";
 		response = {
-			"text": message
-		}
+			"text": message,
+			"quick_replies": [
+				{
+					"content_type": "text",
+					"title": "Use my current location",
+					"payload": CURRENT_LOCATION
+				}, 
+				{
+					"content_type": "text",
+					"title": "Enter a new location", 
+					"payload": ENTER_LOCATION
+				}
+			]
+		};
 		callSendAPI(sender_psid, response);
 	});
 }
