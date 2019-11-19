@@ -110,7 +110,7 @@ function handleMessage(sender_psid, received_message) {
 		if (validateZipCode(address)) {
 
 			// user provides a zip code
-			console.log("Received a zip code");
+			console.log("Received a zip code.");
 
 			request({
 				"uri": `https://maps.googleapis.com/maps/api/geocode/json?address=${address}`,
@@ -125,7 +125,7 @@ function handleMessage(sender_psid, received_message) {
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					console.log("Formatted address: " + formattedAddress);
-					
+
 					response = {
 						"attachment": {
 							"type": "template",
@@ -214,6 +214,7 @@ function handleMessage(sender_psid, received_message) {
 		}
 	} 
 
+	console.log(response);
 	callSendAPI(sender_psid, response);
 }
 
