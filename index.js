@@ -124,6 +124,8 @@ function handleMessage(sender_psid, received_message) {
 				if (locationStatus === "OK") {
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
+					console.log("Formatted address: " + formattedAddress);
+					
 					response = {
 						"attachment": {
 							"type": "template",
@@ -171,11 +173,13 @@ function handleMessage(sender_psid, received_message) {
 			}, (err, res, body) => {
 
 				const bodyObj = JSON.parse(body);
-				const locationStatus = bodyObj.results;
+				const locationStatus = bodyObj.status;
 
 				if (locationStatus === "OK") { 
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
+					console.log("Formatted address: " + formattedAddress);
+
 					response = {
 						"attachment": {
 							"type": "template",
