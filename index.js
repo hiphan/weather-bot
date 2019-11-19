@@ -107,11 +107,13 @@ function handleMessage(sender_psid, received_message) {
 	let response;
 
 	if (received_message.text) {
-		if (chatStatus == waitingAddress) {
+		if (chatStatus === waitingAddress) {
 
 			const address = received_message.text;
 			if (validateZipCode(address)) {
 				// user provides a zip code
+				console.log("Received a zip code");
+
 				request({
 					"uri": `https://maps.googleapis.com/maps/api/geocode/json?address=${address}`,
 					"qs": { "key": GOOGLE_API_KEY },
@@ -146,6 +148,8 @@ function handleMessage(sender_psid, received_message) {
 
 			} else {
 				// user provides an address
+				console.log("Received an address.");
+
 				request({
 					"uri": "https://maps.googleapis.com/maps/api/geocode/json?",
 					"qs": {
@@ -154,7 +158,7 @@ function handleMessage(sender_psid, received_message) {
 					},
 					"method": "GET"
 				}, (err, res, body) => {
-					
+
 					const bodyObj = JSON.parse(body);
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					response = {
