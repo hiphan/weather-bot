@@ -113,8 +113,11 @@ function handleMessage(sender_psid, received_message) {
 			console.log("Received a zip code.");
 
 			request({
-				"uri": `https://maps.googleapis.com/maps/api/geocode/json?address=${address}`,
-				"qs": { "key": GOOGLE_API_KEY },
+				"uri": "https://maps.googleapis.com/maps/api/geocode/json?",
+				"qs": {
+					"address": address, 
+					"key": GOOGLE_API_KEY 
+				},
 				"method": "GET"
 			}, (err, res, body) => {
 
@@ -125,13 +128,13 @@ function handleMessage(sender_psid, received_message) {
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					console.log("Formatted address: " + formattedAddress);
-					console.log("Got here");
+
 					response = {
 						"attachment": {
 							"type": "template",
 							"payload": {
 								"template_type": "button",
-								"text": `You are in ${formattedAddress}. Is this correct?`,
+								"text": `You are in dot zip dot. Is this correct?`,
 								"buttons": [
 									{
 										"type": "postback",
@@ -185,7 +188,7 @@ function handleMessage(sender_psid, received_message) {
 							"type": "template",
 							"payload": {
 								"template_type": "button",
-								"text": `You are in ${formattedAddress}. Is this correct?`,
+								"text": `You are in dot dot dot. Is this correct?`,
 								"buttons": [
 									{
 										"type": "postback",
