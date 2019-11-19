@@ -30,7 +30,9 @@ app.post('/webhook', (req, res) => {
 				console.log('Sender ID: ' + sender_psid);
 
 				if (webhook_event.message) {
-					handleMessage(sender_psid, webhook_event.message);
+					if (sender_psid != 113133066796857) {
+						handleMessage(sender_psid, webhook_event.message);
+					}
 				} else if (webhook_event.postback) {
 					handlePostback(sender_psid, webhook_event.postback);		
 				}
@@ -130,7 +132,25 @@ function handleMessage(sender_psid, received_message) {
 					console.log("Formatted address: " + formattedAddress);
 
 					response = {
-						"text": formattedAddress
+						"attachment": {
+							"type": "template",
+							"payload": {
+								"template_type": "button",
+								"text": `You are in ${formattedAddress}. Is this correct?`,
+								"buttons": [
+									{
+										"type": "postback",
+										"title": "Yes!",
+										"payload": CORRECT_LOCATION
+									}, 
+									{
+										"type": "postback",
+										"title": "No!",
+										"payload": WRONG_LOCATION
+									}
+								]
+							}
+						}
 					}
 
 				} else {
@@ -279,8 +299,9 @@ function requestCurrentLocation(sender_psid, received_postback) {
 function requestNewLocation(sender_psid, received_postback) {
 
 	const response = {
-		"text": "Please enter your zip code or address"
+		"text": "Please enter your zip code or address :)"
 	}
+
 	callSendAPI(sender_psid, response);
 
 }
