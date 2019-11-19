@@ -130,7 +130,7 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 		},
 		"method": "GET",
 	}, (err, res, body) => {
-		let reponse;
+		let response;
 		let greeting = "";
 		if (!err) {
 			const bodyObj = JSON.parse(body);
