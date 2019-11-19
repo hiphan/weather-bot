@@ -99,13 +99,13 @@ function setupGetStarted(res) {
 }
 
 function handleMessage(sender_psid, received_message) {
-	
+
 	let response;
 
 	if (received_message.text) {
 
 		const address = received_message.text;
-		console.log("This is the address: " address);
+		console.log("This is the address: " + address);
 
 		if (validateZipCode(address)) {
 
