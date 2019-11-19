@@ -54,7 +54,7 @@ app.get('/webhook', (req, res) => {
 
 		if (mode == 'subscribe' && token == VERIFY_TOKEN) {
 
-			console.log('WEBHOOK_VERIFIED');
+			console.log('Webhook verifed.');
 			res.status(200).send(challenge);
 
 		} else {
@@ -130,17 +130,20 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 		},
 		"method": "GET",
 	}, (err, res, body) => {
+		let reponse;
 		let greeting = "";
 		if (!err) {
-			let bodyObj = JSON.parse(body);
+			const bodyObj = JSON.parse(body);
 			const first_name = bodyObj.first_name;
 			greeting = "Hello " + first_name + "! ";
 		} else {
 			console.log("Cannot get first name.");
 		} 
-		const message = greeting + "This is a welcome message...";
-		console.log(message);
-		callSendAPI(sender_psid, message);
+		const message = greeting + "This is a welcome message... and Linh is so dumb :)";
+		response = {
+			"text": message
+		}
+		callSendAPI(sender_psid, response);
 	});
 }
 
