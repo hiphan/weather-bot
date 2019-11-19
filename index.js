@@ -153,7 +153,7 @@ function handleMessage(sender_psid, received_message) {
 							}
 						}
 					}
-					console.log(response);
+
 				} else {
 
 					response = {
@@ -163,6 +163,9 @@ function handleMessage(sender_psid, received_message) {
 				}
 
 			});
+					
+			console.log("Should be after 1");
+			callSendAPI(sender_psid, response);
 
 		} else {
 
@@ -217,11 +220,12 @@ function handleMessage(sender_psid, received_message) {
 				}
 			});
 
+
+			console.log("Should be after 1");
+			callSendAPI(sender_psid, response);
+
 		}
 	} 
-
-	console.log("Should be after 1");
-	callSendAPI(sender_psid, response);
 }
 
 function handlePostback(sender_psid, received_postback) {
