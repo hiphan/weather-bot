@@ -329,17 +329,15 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 
 function handleCorrectLocationPostback(sender_psid, received_postback) {
 
-	let current_user = findUser(sender_psid);
+	const filter = { user_id: id };
+	const update = { last_loc: curr_loc };
+	const options = { 
+		upsert: true,
+		new: true };
 
-	if (user) {
-
-		user = await updateUser(sender_psid, zip_code);
-
-	} else {
-
-		user = await createUser(sender_psid, zip_code);
-
-	}
+	User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
+		console.log('Update zip code to db: ', cs);
+	});
 
 }
 
@@ -449,30 +447,3 @@ function extractZipcode(response) {
 
 }
 
-async function createUser(id, loc) {
-
-	return new User({
-		user_id: id,
-		last_loc: loc,
-		created: Date.now()
-	}).save();
-
-}
-
-async function findUser(id) {
-
-	return await User.findOne({ id });
-
-}
-
-async function updateUser(id, curr_loc) {
-
-	const filter = { user_id: id };
-	const update = { last_loc: curr_loc };
-	const options = { new: true };
-
-	await User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
-		console.log('Update zip code to db: ', cs);
-	});
-
-}
