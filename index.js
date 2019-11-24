@@ -330,7 +330,7 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 function handleCorrectLocationPostback(sender_psid, received_postback) {
 
 	const filter = { user_id: sender_psid };
-	const update = { last_loc: curr_loc };
+	const update = { last_loc: zip_code };
 	const options = { 
 		upsert: true,
 		new: true };
@@ -396,7 +396,6 @@ function requestLocation(sender_psid) {
 }
 
 function callSendAPI(sender_psid, response) {
-	console.log("2");
 
 	let request_body = {
 	    "recipient": {
