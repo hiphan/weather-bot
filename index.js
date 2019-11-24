@@ -471,7 +471,7 @@ async function updateUser(id, curr_loc) {
 	const update = { last_loc: curr_loc };
 	const options = { new: true };
 
-	User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
+	await User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
 		console.log('Update zip code to db: ', cs);
 	});
 
