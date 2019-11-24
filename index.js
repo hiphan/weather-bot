@@ -436,8 +436,9 @@ function validateZipCode(zip) {
 function extractZipcode(response) {
 
 	let zip;
+	const address_components = response.results[0].address_components;
 
-	response.forEach((component) => {
+	address_components.forEach((component) => {
 		if (component.types[0] === 'postal_code') {
 			zip = component.long_name;
 		}
