@@ -329,7 +329,7 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 
 function handleCorrectLocationPostback(sender_psid, received_postback) {
 
-	const filter = { user_id: id };
+	const filter = { user_id: sender_psid };
 	const update = { last_loc: curr_loc };
 	const options = { 
 		upsert: true,
