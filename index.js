@@ -1,17 +1,37 @@
 'use strict'; 
 
+const MONGODB_URI = process.env.MONGODB_URI;
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const CURRENT_LOCATION = "CURRENT_LOCATION";
-const ENTER_LOCATION = "ENTER_LOCATION";
-const CORRECT_LOCATION = "CORRECT_LOCATION";
-const WRONG_LOCATION = "WRONG_LOCATION"
+const CURRENT_LOCATION = 'CURRENT_LOCATION';
+const ENTER_LOCATION = 'ENTER_LOCATION';
+const CORRECT_LOCATION = 'CORRECT_LOCATION';
+const WRONG_LOCATION = 'WRONG_LOCATION';
+
+let zip_code;
 
 const 
 	request = require('request'),
 	express = require('express'),
+	mongoose = require('mongoose'),
 	bodyParser = require('body-parser'),
+	User = require('./models/user'),
 	app = express().use(bodyParser.json());
+
+mongoose.set('useCreateIndex', true);
+mongoose.connect(MONGODB_URI, 
+	{	
+		dbName: 'weather_bot',
+		useUnifiedTopology: true,
+		useNewUrlParser: true
+	});
+
+var db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'Connection error:'));
+db.once('open', function() {
+	console.log('Connected to weather_bot DB.');
+});
 
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
@@ -22,6 +42,7 @@ app.post('/webhook', (req, res) => {
 	if (body.object == 'page') {
 
 		body.entry.forEach(function(entry) {
+
 			entry.messaging.forEach((webhook_event) => {
 
 				console.log(webhook_event);
@@ -100,7 +121,9 @@ function setupGetStarted(res) {
 	})
 }
 
-function handleMessage(sender_psid, received_message) {
+function handleMessage(sender_psid, received_message) {	
+
+	// Assume that the message is an address (either zip code or physical address)
 
 	let response;
 
@@ -126,6 +149,8 @@ function handleMessage(sender_psid, received_message) {
 				const locationStatus = bodyObj.status;
 
 				if (locationStatus === "OK") {
+
+					zip_code = extractZipcode(bodyObj);
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					console.log("Formatted address: " + formattedAddress);	
@@ -184,6 +209,8 @@ function handleMessage(sender_psid, received_message) {
 				const locationStatus = bodyObj.status;
 
 				if (locationStatus === "OK") { 
+
+					zip_code = extractZipcode(bodyObj);
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					console.log("Formatted address: " + formattedAddress);
@@ -246,6 +273,14 @@ function handlePostback(sender_psid, received_postback) {
 			requestNewLocation(sender_psid, received_postback);
 			break; 
 
+		case CORRECT_LOCATION:
+			handleCorrectLocationPostback(sender_psid, received_postback);
+			break;
+
+		case WRONG_LOCATION:
+			handleWrongLocationPostback(sender_psid, received_postback);
+			break;
+
 		default: 
 			console.log("Missing logic...");
 	}
@@ -289,6 +324,32 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 		requestLocation(sender_psid);
 
 	});
+
+}
+
+function handleCorrectLocationPostback(sender_psid, received_postback) {
+
+	let current_user = findUser(sender_psid);
+
+	if (user) {
+
+		user = await updateUser(sender_psid, zip_code);
+
+	} else {
+
+		user = await createUser(sender_psid, zip_code);
+
+	}
+
+}
+
+function handleWrongLocationPostback(sender_psid, received_postback) {
+
+	const response = {
+		"text": "Please re-enter your zip code or address :)"
+	}
+
+	callSendAPI(sender_psid, response);
 
 }
 
@@ -368,6 +429,50 @@ function callSendAPI(sender_psid, response) {
 }
 
 function validateZipCode(zip) {
+
 	const regex = RegExp('^[0-9]{5}(?:-[0-9]{4})?$');
 	return regex.test(zip);
+
+}
+
+function extractZipcode(response) {
+
+	let zip;
+
+	response.forEach((component) => {
+		if (component.types[0] === 'postal_code') {
+			zip = component.long_name;
+		}
+	})
+
+	return zip; 
+
+}
+
+async function createUser(id, loc) {
+
+	return new User({
+		user_id: id,
+		last_loc: loc,
+		created: Date.now()
+	}).save();
+
+}
+
+async function findUser(id) {
+
+	return await User.findOne({ id });
+
+}
+
+async function updateUser(id, curr_loc) {
+
+	const filter = { user_id: id };
+	const update = { last_loc: curr_loc };
+	const options = { new: true };
+
+	User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
+		console.log('Update zip code to db: ', cs);
+	});
+
 }
