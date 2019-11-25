@@ -351,8 +351,9 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 	}, (err, res, body) => {
 
 		if (!err) {
-			
+
 			const bodyObj = JSON.parse(body);
+			console.log(bodyObj);
 			const name = bodyObj.name;
 			const dt = Date(bodyObj.dt * 1000);
 			const description = bodyObj.weather[0].description;
