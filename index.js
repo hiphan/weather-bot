@@ -8,6 +8,8 @@ const PREVIOUS_LOCATION = 'PREVIOUS_LOCATION';
 const ENTER_LOCATION = 'ENTER_LOCATION';
 const CORRECT_LOCATION = 'CORRECT_LOCATION';
 const WRONG_LOCATION = 'WRONG_LOCATION';
+const START_NEW = "START_NEW";
+const START_OVER = "START_OVER";
 
 const 
 	request = require('request'),
@@ -221,6 +223,16 @@ function handleMessage(sender_psid, received_message) {
 
 					const zip_code = extractZipcode(bodyObj);
 
+					if (!zip_code) {
+
+						response = {
+							"text": "Cannot find your zip code. Please be more specific."
+						}
+
+						callSendAPI(sender_psid, response);
+						return;
+					}
+
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					console.log("Formatted address: " + formattedAddress);
 
@@ -285,11 +297,11 @@ function handlePostback(sender_psid, received_postback) {
 			break;
 
 		case PREVIOUS_LOCATION:
-			requestPreviousLocation(sender_psid, received_postback);
+			handlePreviousLocation(sender_psid, received_postback);
 			break;
 
 		case ENTER_LOCATION:
-			requestNewLocation(sender_psid, received_postback);
+			handletNewLocation(sender_psid, received_postback);
 			break; 
 
 		case CORRECT_LOCATION:
@@ -438,7 +450,7 @@ function handleWrongLocationPostback(sender_psid, received_postback) {
 
 }
 
-function requestPreviousLocation(sender_psid, received_postback) {
+function handlePreviousLocation(sender_psid, received_postback) {
 
 	console.log("Handling Previous Location Postback.");
 
@@ -531,13 +543,21 @@ function requestPreviousLocation(sender_psid, received_postback) {
 
 }
 
-function requestNewLocation(sender_psid, received_postback) {
+function handleNewLocation(sender_psid, received_postback) {
 
 	const response = {
 		"text": "Please enter your zip code or address :)"
 	}
 
 	callSendAPI(sender_psid, response);
+
+}
+
+function handleStartNew(sender_psid, receive_postback) {
+
+}
+
+function handleStartOver(sender_psid, receive_postback) {
 
 }
 
@@ -548,7 +568,7 @@ function requestLocation(sender_psid) {
 			"type": "template",
 			"payload": {
 				"template_type": "button", 
-				"text": "Would you like to use your current location or enter a location?",
+				"text": "Would you like to use your previous location or a new location?",
 				"buttons": [
 					{
 						"type": "postback", 
