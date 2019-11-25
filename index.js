@@ -153,42 +153,54 @@ function handleMessage(sender_psid, received_message) {
 
 					const zip_code = extractZipcode(bodyObj);
 
-					const formattedAddress = bodyObj.results[0].formatted_address;
-					console.log("Formatted address: " + formattedAddress);	
+					if (zip_code === null) {
 
-					const filter = { user_id: sender_psid };
-					const update = { last_loc: zip_code };
-					const options = { 
-						upsert: true,
-						new: true };
+						response = {
+							"text": "Cannot find your zip code. Please be more specific."
+						}
 
-					User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
-						console.log('Update zip code to db: ', cs);
-					});
+						callSendAPI(sender_psid, response);
 
-					response = {
-						"attachment": {
-							"type": "template",
-							"payload": {
-								"template_type": "button",
-								"text": `You are in ${formattedAddress}. Is this correct?`,
-								"buttons": [
-									{
-										"type": "postback",
-										"title": "Yes!",
-										"payload": CORRECT_LOCATION
-									}, 
-									{
-										"type": "postback",
-										"title": "No!",
-										"payload": WRONG_LOCATION
-									}
-								]
+					} else {
+
+						const formattedAddress = bodyObj.results[0].formatted_address;
+						console.log("Formatted address: " + formattedAddress);	
+
+						const filter = { user_id: sender_psid };
+						const update = { last_loc: zip_code };
+						const options = { 
+							upsert: true,
+							new: true };
+
+						User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
+							console.log('Update zip code to db: ', cs);
+						});
+
+						response = {
+							"attachment": {
+								"type": "template",
+								"payload": {
+									"template_type": "button",
+									"text": `You are in ${formattedAddress}. Is this correct?`,
+									"buttons": [
+										{
+											"type": "postback",
+											"title": "Yes!",
+											"payload": CORRECT_LOCATION
+										}, 
+										{
+											"type": "postback",
+											"title": "No!",
+											"payload": WRONG_LOCATION
+										}
+									]
+								}
 							}
 						}
-					}
 
-					callSendAPI(sender_psid, response);
+						callSendAPI(sender_psid, response);
+						
+					}
 
 				} else {
 
@@ -223,52 +235,54 @@ function handleMessage(sender_psid, received_message) {
 
 					const zip_code = extractZipcode(bodyObj);
 
-					if (!zip_code) {
+					if (zip_code === null) {
 
 						response = {
 							"text": "Cannot find your zip code. Please be more specific."
 						}
 
 						callSendAPI(sender_psid, response);
-						return;
-					}
 
-					const formattedAddress = bodyObj.results[0].formatted_address;
-					console.log("Formatted address: " + formattedAddress);
+					} else {
 
-					const filter = { user_id: sender_psid };
-					const update = { last_loc: zip_code };
-					const options = { 
-						upsert: true,
-						new: true };
+						const formattedAddress = bodyObj.results[0].formatted_address;
+						console.log("Formatted address: " + formattedAddress);
 
-					User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
-						console.log('Update zip code to db: ', cs);
-					});
+						const filter = { user_id: sender_psid };
+						const update = { last_loc: zip_code };
+						const options = { 
+							upsert: true,
+							new: true };
 
-					response = {
-						"attachment": {
-							"type": "template",
-							"payload": {
-								"template_type": "button",
-								"text": `Is this your location: ${formattedAddress}. Is this correct?`,
-								"buttons": [
-									{
-										"type": "postback",
-										"title": "Yes!",
-										"payload": CORRECT_LOCATION
-									}, 
-									{
-										"type": "postback",
-										"title": "No!",
-										"payload": WRONG_LOCATION
-									}
-								]
+						User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
+							console.log('Update zip code to db: ', cs);
+						});
+
+						response = {
+							"attachment": {
+								"type": "template",
+								"payload": {
+									"template_type": "button",
+									"text": `Is this your location: ${formattedAddress}. Is this correct?`,
+									"buttons": [
+										{
+											"type": "postback",
+											"title": "Yes!",
+											"payload": CORRECT_LOCATION
+										}, 
+										{
+											"type": "postback",
+											"title": "No!",
+											"payload": WRONG_LOCATION
+										}
+									]
+								}
 							}
 						}
-					}
 
-					callSendAPI(sender_psid, response);
+						callSendAPI(sender_psid, response);
+
+					}
 
 				} else {
 
