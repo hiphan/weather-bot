@@ -338,9 +338,11 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 		upsert: true,
 		new: true };
 
-	User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
-		console.log('Update zip code to db: ', cs);
-	});
+	if (zip_code) {	
+		User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
+			console.log('Update zip code to db: ', cs);
+		});
+	}
 
 	let curr_zip; 
 	User.findOne({ user_id: sender_psid }, function(err, user) {
