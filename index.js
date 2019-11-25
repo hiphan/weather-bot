@@ -552,7 +552,7 @@ function requestLocation(sender_psid) {
 				"buttons": [
 					{
 						"type": "postback", 
-						"title": "Current location",
+						"title": "Previous location",
 						"payload": PREVIOUS_LOCATION
 					}, 
 					{
