@@ -4,7 +4,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
-const CURRENT_LOCATION = 'CURRENT_LOCATION';
+const PREVIOUS_LOCATION = 'PREVIOUS_LOCATION';
 const ENTER_LOCATION = 'ENTER_LOCATION';
 const CORRECT_LOCATION = 'CORRECT_LOCATION';
 const WRONG_LOCATION = 'WRONG_LOCATION';
@@ -285,7 +285,7 @@ function handlePostback(sender_psid, received_postback) {
 			break;
 
 		case CURRENT_LOCATION:
-			requestCurrentLocation(sender_psid, received_postback);
+			requestPreviousLocation(sender_psid, received_postback);
 			break;
 
 		case ENTER_LOCATION:
@@ -407,8 +407,10 @@ function getWeather(sender_psid) {
 					console.log(reqErr);
 
 					const errorResponse = {
-						"text": "Cannot get weather information. Please try again later. "
+						"text": "Cannot get weather information. Please try again later."
 					}
+
+					callSendAPI(sender_psid, errorResponse);
 
 				}
 
@@ -436,10 +438,96 @@ function handleWrongLocationPostback(sender_psid, received_postback) {
 
 }
 
-function requestCurrentLocation(sender_psid, received_postback) {
+function requestPreviousLocation(sender_psid, received_postback) {
 
-	// Since location quick reply is deprecated, this will call hanldNewLocation
-	requestNewLocation(sender_psid, received_postback);
+	console.log("Handling Previous Location Postback.");
+
+	let response;
+
+	User.findOne({ user_id: sender_psid }, function(dbErr, user) {
+
+		if (!err) {
+
+			const curr_zip = user.last_loc;
+
+			request({
+				"uri": "https://maps.googleapis.com/maps/api/geocode/json?",
+				"qs": {
+					"address": curr_zip, 
+					"key": GOOGLE_API_KEY 
+				},
+				"method": "GET"
+			}, (err, res, body) => {
+
+				const bodyObj = JSON.parse(body);
+				const locationStatus = bodyObj.status;
+
+				if (locationStatus === "OK") {
+
+					const zip_code = extractZipcode(bodyObj);
+
+					const formattedAddress = bodyObj.results[0].formatted_address;
+					console.log("Formatted address: " + formattedAddress);	
+
+					const filter = { user_id: sender_psid };
+					const update = { last_loc: zip_code };
+					const options = { 
+						upsert: true,
+						new: true };
+
+					User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
+						console.log('Update zip code to db: ', cs);
+					});
+
+					response = {
+						"attachment": {
+							"type": "template",
+							"payload": {
+								"template_type": "button",
+								"text": `Your previous location is: ${formattedAddress}. Is this correct?`,
+								"buttons": [
+									{
+										"type": "postback",
+										"title": "Yes!",
+										"payload": CORRECT_LOCATION
+									}, 
+									{
+										"type": "postback",
+										"title": "No!",
+										"payload": WRONG_LOCATION
+									}
+								]
+							}
+						}
+					}
+
+					callSendAPI(sender_psid, response);
+
+				} else {
+
+					response = {
+						"text": "An error occured."
+					}
+
+					callSendAPI(sender_psid, response);
+
+				}
+
+			});
+
+		} else {
+
+			console.log(err);
+
+			response = {
+				"text": "Cannot find your previous location. Please enter a new location :)"
+			}
+
+			callSendAPI(sender_psid, response);
+
+		}	
+
+	});
 
 }
 
