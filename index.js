@@ -342,10 +342,23 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 		console.log('Update zip code to db: ', cs);
 	});
 
+	let curr_zip; 
+	User.findOne({ user_id: sender_psid }, function(err, user) {
+
+		if(!err) {
+			curr_zip = user.last_loc;
+		} else {
+			console.log(err);
+		}
+
+	});
+
+	console.log(`Querying for location ${curr_zip}`);
+
 	request({
 		"uri": "http://api.openweathermap.org/data/2.5/weather?",
 		"qs": {
-			"zip": zip_code,
+			"zip": curr_zip,
 			"appid": OPENWEATHER_API_KEY
 		},
 		"method": "GET"
@@ -355,7 +368,6 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 		if (!err) {
 
 			const bodyObj = JSON.parse(body);
-			console.log(bodyObj);
 			const name = bodyObj.name;
 			const dt = Date(bodyObj.dt * 1000);
 			const description = bodyObj.weather[0].description;
