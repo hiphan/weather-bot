@@ -191,7 +191,7 @@ function handleMessage(sender_psid, received_message) {
 				} else {
 
 					response = {
-						"text": "An error occured."
+						"text": "An error occured. Please re-enter your address."
 					}
 
 					callSendAPI(sender_psid, response);
@@ -334,7 +334,7 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 
 		} 
 
-		const message = greeting + "Welcome to Weather Bot...";
+		const message = greeting + "Welcome to Weather Bot!";
 		response = {
 			"text": message,
 		};
@@ -506,7 +506,7 @@ function requestPreviousLocation(sender_psid, received_postback) {
 				} else {
 
 					response = {
-						"text": "An error occured."
+						"text": "An error occured. Please re-enter your address."
 					}
 
 					callSendAPI(sender_psid, response);
