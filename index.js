@@ -330,6 +330,8 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 
 function handleCorrectLocationPostback(sender_psid, received_postback) {
 
+	console.log("Handling Correct Location Postback.");
+
 	const filter = { user_id: sender_psid };
 	const update = { last_loc: zip_code };
 	const options = { 
@@ -389,6 +391,8 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 }
 
 function handleWrongLocationPostback(sender_psid, received_postback) {
+
+	console.log("Handling Wrong Location Postback.");
 
 	const response = {
 		"text": "Please re-enter your zip code or address :)"
