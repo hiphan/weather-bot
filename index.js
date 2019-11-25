@@ -239,7 +239,7 @@ function handleMessage(sender_psid, received_message) {
 							"type": "template",
 							"payload": {
 								"template_type": "button",
-								"text": `You are in ${formattedAddress}. Is this correct?`,
+								"text": `Is this your location: ${formattedAddress}. Is this correct?`,
 								"buttons": [
 									{
 										"type": "postback",
@@ -293,7 +293,7 @@ function handlePostback(sender_psid, received_postback) {
 			break; 
 
 		case CORRECT_LOCATION:
-			handleCorrectLocationPostback(sender_psid, received_postback);
+			getWeather(sender_psid);
 			break;
 
 		case WRONG_LOCATION:
@@ -346,11 +346,11 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 
 }
 
-function handleCorrectLocationPostback(sender_psid, received_postback) {
+function getWeather(sender_psid) {
 
 	console.log("Handling Correct Location Postback.");
 
-	User.findOne({ user_id: sender_psid }, function(err, user) {
+	User.findOne({ user_id: sender_psid }, function(dbErr, user) {
 
 		if(!err) {
 
@@ -364,7 +364,7 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 				},
 				"method": "GET"
 
-			}, (err, res, body) => {
+			}, (reqErr, res, body) => {
 
 				if (!err) {
 
@@ -404,7 +404,11 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 
 				} else {
 
-					console.log(err);
+					console.log(reqErr);
+
+					const errorResponse = {
+						"text": "Cannot get weather information. Please try again later. "
+					}
 
 				}
 
@@ -412,7 +416,7 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 
 		} else {
 
-			console.log(err);
+			console.log(dbErr);
 
 		}
 
