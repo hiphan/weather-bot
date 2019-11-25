@@ -350,30 +350,38 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 
 	}, (err, res, body) => {
 
-		const bodyObj = JSON.parse(body);
-		const name = bodyObj.name;
-		const dt = Date(bodyObj.dt * 1000);
-		const description = bodyObj.weather[0].description;
-		const icon = bodyObj.weather[0].icon;
-		const tempKelvin = bodyObj.main.temp;
-		const tempCelcius = (tempKelvin - 273.15).toFixed(2);
-		const tempFahrenheit = (tempKelvin * 9 / 5 - 459.67).toFixed(2);
+		if (!err) {
+			
+			const bodyObj = JSON.parse(body);
+			const name = bodyObj.name;
+			const dt = Date(bodyObj.dt * 1000);
+			const description = bodyObj.weather[0].description;
+			const icon = bodyObj.weather[0].icon;
+			const tempKelvin = bodyObj.main.temp;
+			const tempCelcius = (tempKelvin - 273.15).toFixed(2);
+			const tempFahrenheit = (tempKelvin * 9 / 5 - 459.67).toFixed(2);
 
-		const responseText = `Weather for ${name}: ${description} \n Temperature: ${tempCelcius} ${String.fromCharCode(176)}C (${tempFahrenheit} ${String.fromCharCode(176)}F) \n Last updated on: ${dt}`;
+			const responseText = `Weather for ${name}: ${description} \n Temperature: ${tempCelcius} ${String.fromCharCode(176)}C (${tempFahrenheit} ${String.fromCharCode(176)}F) \n Last updated on: ${dt}`;
 
-		const response = {
-			"text": responseText,
-			"attachment": {
-				"type": "image",
-				"payload": {
-					"url": `http://openweathermap.org/img/wn/${icon}@2x.png`,
-					"is_reusable": true
+			const response = {
+				"text": responseText,
+				"attachment": {
+					"type": "image",
+					"payload": {
+						"url": `http://openweathermap.org/img/wn/${icon}@2x.png`,
+						"is_reusable": true
+					}
 				}
 			}
+
+			callSendAPI(sender_psid, response);
+
+		} else {
+
+			console.log(err);
+
 		}
 
-		callSendAPI(sender_psid, response);
-		
 	}
 );
 
