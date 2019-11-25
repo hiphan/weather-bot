@@ -149,11 +149,11 @@ function handleMessage(sender_psid, received_message) {
 				const bodyObj = JSON.parse(body);
 				const locationStatus = bodyObj.status;
 
-				if (locationStatus === "OK") {
+				if (locationStatus == "OK") {
 
 					const zip_code = extractZipcode(bodyObj);
 
-					if (zip_code === null) {
+					if (zip_code == null) {
 
 						response = {
 							"text": "Cannot find your zip code. Please be more specific."
@@ -231,11 +231,11 @@ function handleMessage(sender_psid, received_message) {
 				const bodyObj = JSON.parse(body);
 				const locationStatus = bodyObj.status;
 
-				if (locationStatus === "OK") { 
+				if (locationStatus == "OK") { 
 
 					const zip_code = extractZipcode(bodyObj);
 
-					if (zip_code === null) {
+					if (zip_code == null) {
 
 						response = {
 							"text": "Cannot find your zip code. Please be more specific."
