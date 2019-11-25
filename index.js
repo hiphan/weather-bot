@@ -3,6 +3,7 @@
 const MONGODB_URI = process.env.MONGODB_URI;
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 const CURRENT_LOCATION = 'CURRENT_LOCATION';
 const ENTER_LOCATION = 'ENTER_LOCATION';
 const CORRECT_LOCATION = 'CORRECT_LOCATION';
@@ -339,6 +340,43 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 		console.log('Update zip code to db: ', cs);
 	});
 
+	request({
+		"uri": "http://api.openweathermap.org/data/2.5/weather?",
+		"qs": {
+			"zip": zip_code,
+			"appid": OPENWEATHER_API_KEY
+		},
+		"method": "GET"
+
+	}, (err, res, body) => {
+
+		const bodyObj = JSON.parse(body);
+		const name = bodyObj.name;
+		const dt = Date(bodyObj.dt * 1000);
+		const description = bodyObj.weather[0].description;
+		const icon = bodyObj.weather[0].icon;
+		const tempKelvin = bodyObj.main.temp;
+		const tempCelcius = (tempKelvin - 273.15).toFixed(2);
+		const tempFahrenheit = (tempKelvin * 9 / 5 - 459.67).toFixed(2);
+
+		const responseText = `Weather for ${name}: ${description} \n Temperature: ${tempCelcius} ${String.fromCharCode(176)}C (${tempFahrenheit} ${String.fromCharCode(176)}F) \n Last updated on: ${dt}`;
+
+		const response = {
+			"text": responseText,
+			"attachment": {
+				"type": "image",
+				"payload": {
+					"url": `http://openweathermap.org/img/wn/${icon}@2x.png`,
+					"is_reusable": true
+				}
+			}
+		}
+
+		callSendAPI(sender_psid, response);
+		
+	}
+);
+
 }
 
 function handleWrongLocationPostback(sender_psid, received_postback) {
@@ -369,6 +407,7 @@ function requestNewLocation(sender_psid, received_postback) {
 }
 
 function requestLocation(sender_psid) {
+
 	const response = {
 		"attachment": {
 			"type": "template",
