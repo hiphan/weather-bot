@@ -284,7 +284,7 @@ function handlePostback(sender_psid, received_postback) {
 			handleGetStartedPostback(sender_psid, received_postback);
 			break;
 
-		case CURRENT_LOCATION:
+		case PREVIOUS_LOCATION:
 			requestPreviousLocation(sender_psid, received_postback);
 			break;
 
@@ -553,7 +553,7 @@ function requestLocation(sender_psid) {
 					{
 						"type": "postback", 
 						"title": "Current location",
-						"payload": CURRENT_LOCATION
+						"payload": PREVIOUS_LOCATION
 					}, 
 					{
 						"type": "postback",
