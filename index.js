@@ -370,20 +370,27 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 
 					const bodyObj = JSON.parse(body);
 					const name = bodyObj.name;
-					const dt = Date(bodyObj.dt * 1000);
+
+					const dataTime = new Date(bodyObj.dt * 1000);
+					const currTime = new Date(); 
+					const timeDifference = currTime.getTime() - dataTime.getTime();
+					const minDifference = Math.round(timeDifference / 60);
+					const secDifference = (timeDifference % 60).toFixed(); 
+
 					const description = bodyObj.weather[0].description;
 					const icon = bodyObj.weather[0].icon;
 					const tempKelvin = bodyObj.main.temp;
 					const tempCelcius = (tempKelvin - 273.15).toFixed(2);
 					const tempFahrenheit = (tempKelvin * 9 / 5 - 459.67).toFixed(2);
 
-					const responseText = `Weather for ${name}: ${description} \n Temperature: ${tempCelcius} ${String.fromCharCode(176)}C (${tempFahrenheit} ${String.fromCharCode(176)}F) \n Last updated on: ${dt}`;
+					const responseText = `Weather for ${name}: ${description}. \nTemperature: ${tempCelcius} ${String.fromCharCode(176)}C (${tempFahrenheit} ${String.fromCharCode(176)}F). \nLast updated: ${minDifference} minutes and ${secDifference} seconds ago.`;
 
 					const firstResponse = {
 						"text": responseText,
 					}
 					callSendAPI(sender_psid, firstResponse);
 
+					console.log(`http://openweathermap.org/img/wn/${icon}@2x.png`);
 					const secondResponse = {
 						"attachment": {
 							"type": "image",
