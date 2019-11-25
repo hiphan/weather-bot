@@ -379,8 +379,12 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 
 					const responseText = `Weather for ${name}: ${description} \n Temperature: ${tempCelcius} ${String.fromCharCode(176)}C (${tempFahrenheit} ${String.fromCharCode(176)}F) \n Last updated on: ${dt}`;
 
-					const response = {
+					const firstResponse = {
 						"text": responseText,
+					}
+					callSendAPI(sender_psid, firstResponse);
+
+					const secondResponse = {
 						"attachment": {
 							"type": "image",
 							"payload": {
@@ -389,8 +393,7 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 							}
 						}
 					}
-
-					callSendAPI(sender_psid, response);
+					callSendAPI(sender_psid, secondResponse);
 
 				} else {
 
