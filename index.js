@@ -352,7 +352,7 @@ function getWeather(sender_psid) {
 
 	User.findOne({ user_id: sender_psid }, function(dbErr, user) {
 
-		if(!err) {
+		if(!dbErr) {
 
 			const curr_zip = user.last_loc;
 			console.log(`Querying for location ${curr_zip}`);
@@ -366,7 +366,7 @@ function getWeather(sender_psid) {
 
 			}, (reqErr, res, body) => {
 
-				if (!err) {
+				if (!reqErr) {
 
 					const bodyObj = JSON.parse(body);
 					const name = bodyObj.name;
@@ -446,7 +446,7 @@ function requestPreviousLocation(sender_psid, received_postback) {
 
 	User.findOne({ user_id: sender_psid }, function(dbErr, user) {
 
-		if (!err) {
+		if (!dbErr) {
 
 			const curr_zip = user.last_loc;
 
@@ -457,7 +457,7 @@ function requestPreviousLocation(sender_psid, received_postback) {
 					"key": GOOGLE_API_KEY 
 				},
 				"method": "GET"
-			}, (err, res, body) => {
+			}, (reqErr, res, body) => {
 
 				const bodyObj = JSON.parse(body);
 				const locationStatus = bodyObj.status;
@@ -517,7 +517,7 @@ function requestPreviousLocation(sender_psid, received_postback) {
 
 		} else {
 
-			console.log(err);
+			console.log(dbErr);
 
 			response = {
 				"text": "Cannot find your previous location. Please enter a new location :)"
