@@ -373,7 +373,7 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 
 					const dataTime = new Date(bodyObj.dt * 1000);
 					const currTime = new Date(); 
-					const timeDifference = currTime.getTime() - dataTime.getTime();
+					const timeDifference = (currTime.getTime() - dataTime.getTime()) / 1000;
 					const minDifference = Math.round(timeDifference / 60);
 					const secDifference = (timeDifference % 60).toFixed(); 
 
