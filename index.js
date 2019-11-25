@@ -9,8 +9,6 @@ const ENTER_LOCATION = 'ENTER_LOCATION';
 const CORRECT_LOCATION = 'CORRECT_LOCATION';
 const WRONG_LOCATION = 'WRONG_LOCATION';
 
-let zip_code;
-
 const 
 	request = require('request'),
 	express = require('express'),
@@ -151,10 +149,20 @@ function handleMessage(sender_psid, received_message) {
 
 				if (locationStatus === "OK") {
 
-					zip_code = extractZipcode(bodyObj);
+					const zip_code = extractZipcode(bodyObj);
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					console.log("Formatted address: " + formattedAddress);	
+
+					const filter = { user_id: sender_psid };
+					const update = { last_loc: zip_code };
+					const options = { 
+						upsert: true,
+						new: true };
+
+					User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
+						console.log('Update zip code to db: ', cs);
+					});
 
 					response = {
 						"attachment": {
@@ -211,10 +219,20 @@ function handleMessage(sender_psid, received_message) {
 
 				if (locationStatus === "OK") { 
 
-					zip_code = extractZipcode(bodyObj);
+					const zip_code = extractZipcode(bodyObj);
 
 					const formattedAddress = bodyObj.results[0].formatted_address;
 					console.log("Formatted address: " + formattedAddress);
+
+					const filter = { user_id: sender_psid };
+					const update = { last_loc: zip_code };
+					const options = { 
+						upsert: true,
+						new: true };
+
+					User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
+						console.log('Update zip code to db: ', cs);
+					});
 
 					response = {
 						"attachment": {
@@ -332,24 +350,11 @@ function handleCorrectLocationPostback(sender_psid, received_postback) {
 
 	console.log("Handling Correct Location Postback.");
 
-	const filter = { user_id: sender_psid };
-	const update = { last_loc: zip_code };
-	const options = { 
-		upsert: true,
-		new: true };
-
-	if (zip_code) {	
-		User.findOneAndUpdate(filter, update, options).exec((err, cs) => {
-			console.log('Update zip code to db: ', cs);
-		});
-	}
-
-	let curr_zip; 
 	User.findOne({ user_id: sender_psid }, function(err, user) {
 
 		if(!err) {
 
-			curr_zip = user.last_loc;
+			const curr_zip = user.last_loc;
 			console.log(`Querying for location ${curr_zip}`);
 			request({
 				"uri": "http://api.openweathermap.org/data/2.5/weather?",
