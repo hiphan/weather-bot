@@ -632,7 +632,8 @@ function handleNewLocation(sender_psid, received_postback) {
 
 			callSendAPI(sender_psid, response);
 		}
-
+	});
+	
 }
 
 function handleStartOver(sender_psid, receive_postback) {
