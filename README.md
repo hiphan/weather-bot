@@ -1,6 +1,7 @@
-#Zeus Bot: A simple weather bot for Facebook Messenger#
+## Zeus Bot: A simple weather bot for Facebook Messenger ## 
 
-This is my first Messenger bot created by following Facebook's [Quick Start guide].(https://developers.facebook.com/docs/messenger-platform/getting-started/quick-start). The bot is deployed on Heroku and can be found [here](https://weather-bot-messenger.herokuapp.com/).
+This is my first Messenger bot created by following Facebook's [Quick Start guide](https://developers.facebook.com/docs/messenger-platform/getting-started/quick-start). 
+Zeus Bot is deployed on Heroku and can be found [here](https://weather-bot-messenger.herokuapp.com/).
 
 ---
 
