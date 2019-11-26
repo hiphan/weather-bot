@@ -133,6 +133,9 @@ function setupGetStarted(res) {
 function getMenu() {
 
 	const menuContent = {
+		"get_started": {
+    		"payload": "Get started"
+  		},
 	    "persistent_menu": [
 	        {
 	            "locale": "default",
