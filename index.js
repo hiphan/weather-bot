@@ -8,7 +8,6 @@ const PREVIOUS_LOCATION = 'PREVIOUS_LOCATION';
 const ENTER_LOCATION = 'ENTER_LOCATION';
 const CORRECT_LOCATION = 'CORRECT_LOCATION';
 const WRONG_LOCATION = 'WRONG_LOCATION';
-const START_NEW = "START_NEW";
 const START_OVER = "START_OVER";
 
 const 
@@ -181,7 +180,7 @@ function handleMessage(sender_psid, received_message) {
 								"type": "template",
 								"payload": {
 									"template_type": "button",
-									"text": `You are in ${formattedAddress}. Is this correct?`,
+									"text": `Your location is ${formattedAddress}. Is this correct?`,
 									"buttons": [
 										{
 											"type": "postback",
@@ -192,6 +191,11 @@ function handleMessage(sender_psid, received_message) {
 											"type": "postback",
 											"title": "No!",
 											"payload": WRONG_LOCATION
+										},
+										{
+											"type": "postback",
+											"title": "Start over",
+											"payload": START_OVER
 										}
 									]
 								}
@@ -263,7 +267,7 @@ function handleMessage(sender_psid, received_message) {
 								"type": "template",
 								"payload": {
 									"template_type": "button",
-									"text": `Is this your location: ${formattedAddress}. Is this correct?`,
+									"text": `Your location is ${formattedAddress}. Is this correct?`,
 									"buttons": [
 										{
 											"type": "postback",
@@ -274,6 +278,11 @@ function handleMessage(sender_psid, received_message) {
 											"type": "postback",
 											"title": "No!",
 											"payload": WRONG_LOCATION
+										},
+										{
+											"type": "postback",
+											"title": "Start over",
+											"payload": START_OVER
 										}
 									]
 								}
@@ -324,6 +333,10 @@ function handlePostback(sender_psid, received_postback) {
 
 		case WRONG_LOCATION:
 			handleWrongLocationPostback(sender_psid, received_postback);
+			break;
+
+		case START_OVER:
+			handleStartOver(sender_psid, received_postback);
 			break;
 
 		default: 
@@ -510,7 +523,7 @@ function handlePreviousLocation(sender_psid, received_postback) {
 							"type": "template",
 							"payload": {
 								"template_type": "button",
-								"text": `Your previous location is: ${formattedAddress}. Is this correct?`,
+								"text": `Your previous location is ${formattedAddress}. Is this correct?`,
 								"buttons": [
 									{
 										"type": "postback",
@@ -521,6 +534,11 @@ function handlePreviousLocation(sender_psid, received_postback) {
 										"type": "postback",
 										"title": "No!",
 										"payload": WRONG_LOCATION
+									},
+									{
+										"type": "postback",
+										"title": "Start over",
+										"payload": START_OVER
 									}
 								]
 							}
@@ -546,7 +564,7 @@ function handlePreviousLocation(sender_psid, received_postback) {
 			console.log(dbErr);
 
 			response = {
-				"text": "Cannot find your previous location. Please enter a new location :)"
+				"text": "Cannot find your previous location. Please enter a new location :D"
 			}
 
 			callSendAPI(sender_psid, response);
@@ -560,18 +578,64 @@ function handlePreviousLocation(sender_psid, received_postback) {
 function handleNewLocation(sender_psid, received_postback) {
 
 	const response = {
-		"text": "Please enter your zip code or address :)"
+		"text": "Please enter your zip code or address :D"
 	}
 
 	callSendAPI(sender_psid, response);
 
 }
 
-function handleStartNew(sender_psid, receive_postback) {
-
-}
-
 function handleStartOver(sender_psid, receive_postback) {
+
+	request({
+		"uri": `https://graph.facebook.com/v2.6/${sender_psid}`,
+		"qs": { 
+			"access_token": PAGE_ACCESS_TOKEN,
+			"fields": "first_name"
+		},
+		"method": "GET",
+	}, (err, res, body) => {
+
+		let response;
+		let greeting = "";
+
+		if (!err) {
+
+			const bodyObj = JSON.parse(body);
+			const first_name = bodyObj.first_name;
+			greeting = "Hi, " + first_name + "! ";
+
+		} else {
+
+			console.log("Cannot get first name.");
+
+		} 
+
+		const message = greeting + "Would you like to use your previous location or a new location?";
+
+		response = {
+		"attachment": {
+			"type": "template",
+			"payload": {
+				"template_type": "button", 
+				"text": message,
+				"buttons": [
+					{
+						"type": "postback", 
+						"title": "Previous location",
+						"payload": PREVIOUS_LOCATION
+					}, 
+					{
+						"type": "postback",
+						"title": "New location",
+						"payload": ENTER_LOCATION
+					}
+				] 
+			}
+		}
+	}
+
+	callSendAPI(sender_psid, response);
 
 }
 
@@ -593,6 +657,11 @@ function requestLocation(sender_psid) {
 						"type": "postback",
 						"title": "New location",
 						"payload": ENTER_LOCATION
+					},
+					{
+						"type": "postback",
+						"title": "Start over",
+						"payload": START_OVER
 					}
 				] 
 			}
