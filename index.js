@@ -136,7 +136,7 @@ function getMenu() {
 	    "persistent_menu": [
 	        {
 	            "locale": "default",
-	            "composer_input_disabled": true,
+	            "composer_input_disabled": false,
 	            "call_to_actions": [
 	                {
 	                    "type": "postback",
@@ -149,7 +149,7 @@ function getMenu() {
 	}
 
 	request({
-    	"uri": "https://graph.facebook.com/v2.6/me/thread_settings",
+    	"uri": "https://graph.facebook.com/v2.6/me/messenger_profile",
     	"qs": { "access_token": PAGE_ACCESS_TOKEN },
     	"method": "POST",
     	"json": menuContent
