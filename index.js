@@ -42,6 +42,8 @@ app.post('/webhook', (req, res) => {
 
 	if (body.object == 'page') {
 
+		getMenu();
+
 		body.entry.forEach(function(entry) {
 
 			entry.messaging.forEach((webhook_event) => {
@@ -124,6 +126,26 @@ function setupGetStarted(res) {
 			console.log("Unable to get starting button: " + err);
 		}
 	})
+}
+
+function getMenu() {
+
+	const message = {
+	    "persistent_menu": [
+	        {
+	            "locale": "default",
+	            "composer_input_disabled": true,
+	            "call_to_actions": [
+	                {
+	                    "type": "postback",
+	                    "title": "Start a new search",
+	                    "payload": START_OVER
+	                }
+	            ]
+	        }
+	    ]
+	}
+
 }
 
 function handleMessage(sender_psid, received_message) {	
@@ -449,25 +471,6 @@ function getWeather(sender_psid) {
 					}
 					callSendAPI(sender_psid, secondResponse);
 
-					// Start over quick reply 
-					const startOverReply = {
-						"text": "Would you like to start a new search?",
-					    "quick_replies":[
-					    	{
-					    		"content_type": "text",
-					        	"title": "New search",
-					        	"payload": START_OVER
-					      	}, 
-					      	{
-					      		"content_type": "text",
-					      		"title": "I'm done",
-					      		"payload": DONE
-					      	}
-					    ]
-					};
-
-				  	callSendAPI(sender_psid, startOverReply);
-
 				} else {
 
 					console.log(reqErr);
@@ -550,7 +553,7 @@ function handlePreviousLocation(sender_psid, received_postback) {
 							"type": "template",
 							"payload": {
 								"template_type": "button",
-								"text": `Your previous location is ${formattedAddress}. Is this correct?`,
+								"text": `Your location is ${formattedAddress}. Is this correct?`,
 								"buttons": [
 									{
 										"type": "postback",
@@ -633,7 +636,7 @@ function handleNewLocation(sender_psid, received_postback) {
 			callSendAPI(sender_psid, response);
 		}
 	});
-	
+
 }
 
 function handleStartOver(sender_psid, receive_postback) {
