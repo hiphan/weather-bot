@@ -385,6 +385,7 @@ function handleGetStartedPostback(sender_psid, received_postback) {
 
 }
 
+// equivalent to handleCorrectLocationPostback
 function getWeather(sender_psid) {
 
 	console.log("Handling Correct Location Postback.");
@@ -429,7 +430,6 @@ function getWeather(sender_psid) {
 					}
 					callSendAPI(sender_psid, firstResponse);
 
-					console.log(`http://openweathermap.org/img/wn/${icon}@2x.png`);
 					const secondResponse = {
 						"attachment": {
 							"type": "image",
@@ -440,6 +440,19 @@ function getWeather(sender_psid) {
 						}
 					}
 					callSendAPI(sender_psid, secondResponse);
+
+					// Start over quick reply 
+					const startOverReply = {
+					    "quick_replies":[
+					    	{
+					    		"content_type": "text",
+					        	"title": "Start a new search",
+					        	"payload": START_OVER
+					      	}
+					    ]
+					};
+
+				  	callSendAPI(sender_psid, startOverReply);
 
 				} else {
 
@@ -636,7 +649,7 @@ function handleStartOver(sender_psid, receive_postback) {
 		}
 
 		callSendAPI(sender_psid, response);
-		
+
 	});
 
 }
@@ -659,11 +672,6 @@ function requestLocation(sender_psid) {
 						"type": "postback",
 						"title": "New location",
 						"payload": ENTER_LOCATION
-					},
-					{
-						"type": "postback",
-						"title": "Start over",
-						"payload": START_OVER
 					}
 				] 
 			}
