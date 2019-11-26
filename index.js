@@ -9,6 +9,7 @@ const ENTER_LOCATION = 'ENTER_LOCATION';
 const CORRECT_LOCATION = 'CORRECT_LOCATION';
 const WRONG_LOCATION = 'WRONG_LOCATION';
 const START_OVER = "START_OVER";
+const DONE = "DONE";
 
 const 
 	request = require('request'),
@@ -51,8 +52,12 @@ app.post('/webhook', (req, res) => {
 				console.log('Sender ID: ' + sender_psid);
 
 				if (webhook_event.message) {
-					if (sender_psid != 113133066796857) {
-						handleMessage(sender_psid, webhook_event.message);
+					if (webhook_event.message.quick_reply) {
+						handlePostback(sender_psid, webhook_event.message.quick_reply);
+					} else {
+						if (sender_psid != 113133066796857) {
+							handleMessage(sender_psid, webhook_event.message);
+						}
 					}
 				} else if (webhook_event.postback) {
 					handlePostback(sender_psid, webhook_event.postback);		
@@ -339,6 +344,9 @@ function handlePostback(sender_psid, received_postback) {
 			handleStartOver(sender_psid, received_postback);
 			break;
 
+		case DONE:
+			break;
+
 		default: 
 			console.log("Missing logic...");
 	}
@@ -443,11 +451,17 @@ function getWeather(sender_psid) {
 
 					// Start over quick reply 
 					const startOverReply = {
+						"text": "Would you like to start a new search?",
 					    "quick_replies":[
 					    	{
 					    		"content_type": "text",
-					        	"title": "Start a new search",
+					        	"title": "New search",
 					        	"payload": START_OVER
+					      	}, 
+					      	{
+					      		"content_type": "text",
+					      		"title": "I'm done",
+					      		"payload": DONE
 					      	}
 					    ]
 					};
@@ -590,11 +604,34 @@ function handlePreviousLocation(sender_psid, received_postback) {
 
 function handleNewLocation(sender_psid, received_postback) {
 
-	const response = {
-		"text": "Please enter your zip code or address :D"
-	}
+	User.findOne({ user_id: sender_psid }, function(dbErr, user) {
 
-	callSendAPI(sender_psid, response);
+		if(!dbErr) {
+
+			const last_zip = user.last_loc;
+
+			const response = {
+				"text": "Please enter your zip code or address :D",
+				"quick_replies": [
+					{
+						"content_type": "text",
+						"title": last_zip,
+						"payload": PREVIOUS_LOCATION
+					}
+				]
+			}
+
+			callSendAPI(sender_psid, response);
+
+		} else {
+
+			console.log(dbErr);
+			const response = {
+				"text": "Please enter your zip code or address :D"
+			}
+
+			callSendAPI(sender_psid, response);
+		}
 
 }
 
