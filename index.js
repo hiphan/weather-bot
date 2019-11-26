@@ -614,28 +614,30 @@ function handleStartOver(sender_psid, receive_postback) {
 		const message = greeting + "Would you like to use your previous location or a new location?";
 
 		response = {
-		"attachment": {
-			"type": "template",
-			"payload": {
-				"template_type": "button", 
-				"text": message,
-				"buttons": [
-					{
-						"type": "postback", 
-						"title": "Previous location",
-						"payload": PREVIOUS_LOCATION
-					}, 
-					{
-						"type": "postback",
-						"title": "New location",
-						"payload": ENTER_LOCATION
-					}
-				] 
+			"attachment": {
+				"type": "template",
+				"payload": {
+					"template_type": "button", 
+					"text": message,
+					"buttons": [
+						{
+							"type": "postback", 
+							"title": "Previous location",
+							"payload": PREVIOUS_LOCATION
+						}, 
+						{
+							"type": "postback",
+							"title": "New location",
+							"payload": ENTER_LOCATION
+						}
+					] 
+				}
 			}
 		}
-	}
 
-	callSendAPI(sender_psid, response);
+		callSendAPI(sender_psid, response);
+		
+	});
 
 }
 
