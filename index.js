@@ -120,17 +120,19 @@ function setupGetStarted(res) {
 		"method": "POST",
 		"json": start_body
 	}, (err, res, body) => {
+
 		if (!err) {
 			console.log("Got starting button!")
 		} else {
 			console.log("Unable to get starting button: " + err);
 		}
-	})
+
+	});
 }
 
 function getMenu() {
 
-	const message = {
+	const menuContent = {
 	    "persistent_menu": [
 	        {
 	            "locale": "default",
@@ -145,6 +147,21 @@ function getMenu() {
 	        }
 	    ]
 	}
+
+	request({
+    	"uri": "https://graph.facebook.com/v2.6/me/thread_settings",
+    	"qs": { "access_token": PAGE_ACCESS_TOKEN },
+    	"method": "POST",
+    	"json": menuContent
+  	}, (err, res, body) => {
+	    
+	    if (!err) {
+	    	console.log("Successfully got persistent menu.");
+	    } else {
+	    	console.log("Cannot get persistent menu: " + err);
+	    }
+
+    });
 
 }
 
